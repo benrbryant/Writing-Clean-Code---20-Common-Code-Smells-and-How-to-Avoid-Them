@@ -7,7 +7,7 @@
     "start": "node scripts/run.js",
     "exec": "ts-node",
     "format": "prettier --write ./**/*.{js,ts}",
-    "prepare": "husky install"
+    "prepare": "cd .. && husky install"
   },
   "repository": {
     "type": "git",
