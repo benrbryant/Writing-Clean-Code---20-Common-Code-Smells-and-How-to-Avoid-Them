@@ -1,62 +1,61 @@
+interface Operation {
+  calculate(oldValue: number, newValue: number): number;
+  print(oldValue: number, newValue: number): void;
+}
+
+class Add implements Operation {
+  calculate(oldValue: number, newValue: number): number {
+    return oldValue + newValue;
+  }
+  print(oldValue: number, newValue: number): void {
+    console.log(`${oldValue} plus ${newValue}`);
+  }
+}
+
+class Subtract implements Operation {
+  calculate(oldValue: number, newValue: number): number {
+    return oldValue - newValue;
+  }
+  print(oldValue: number, newValue: number): void {
+    console.log(`${oldValue} minus ${newValue}`);
+  }
+}
+
+class Multiply implements Operation {
+  calculate(oldValue: number, newValue: number): number {
+    return oldValue * newValue;
+  }
+  print(oldValue: number, newValue: number): void {
+    console.log(`${oldValue} multiplied by ${newValue}`);
+  }
+}
+
+class Divide implements Operation {
+  calculate(oldValue: number, newValue: number): number {
+    return oldValue / newValue;
+  }
+  print(oldValue: number, newValue: number): void {
+    console.log(`${oldValue} divided by ${newValue}`);
+  }
+}
+
 class Calculator {
-  private _operations: { operation: string; oldValue: number; value: number }[] = [];
+  private _operations: { operation: Operation; oldValue: number; value: number }[] = [];
   private _currentValue: number;
 
   constructor(initialValue: number) {
     this._currentValue = initialValue;
   }
 
-  execute(operation: string, newValue: number) {
-    switch (operation) {
-      case "add":
-        this._operations.push({ operation: "add", oldValue: this._currentValue, value: newValue });
-        this._currentValue = this._currentValue + newValue;
-        return this;
-      case "subtract":
-        this._operations.push({
-          operation: "subtract",
-          oldValue: this._currentValue,
-          value: newValue,
-        });
-        this._currentValue = this._currentValue - newValue;
-        return this;
-      case "multiply":
-        this._operations.push({
-          operation: "multiply",
-          oldValue: this._currentValue,
-          value: newValue,
-        });
-        this._currentValue = this._currentValue * newValue;
-        return this;
-      case "divide":
-        this._operations.push({
-          operation: "divide",
-          oldValue: this._currentValue,
-          value: newValue,
-        });
-        this._currentValue = this._currentValue / newValue;
-        return this;
-      default:
-        throw new Error("Unsupported operation");
-    }
+  execute(operation: Operation, newValue: number) {
+    this._operations.push({ operation, oldValue: this._currentValue, value: newValue });
+    this._currentValue = operation.calculate(this._currentValue, newValue);
+    return this;
   }
 
   printOperations() {
     for (const operationObj of this._operations) {
-      switch (operationObj.operation) {
-        case "add":
-          console.log(`${operationObj.oldValue} plus ${operationObj.value}`);
-          break;
-        case "subtract":
-          console.log(`${operationObj.oldValue} minus ${operationObj.value}`);
-          break;
-        case "multiply":
-          console.log(`${operationObj.oldValue} multiplied by ${operationObj.value}`);
-          break;
-        case "divide":
-          console.log(`${operationObj.oldValue} divided by ${operationObj.value}`);
-          break;
-      }
+      operationObj.operation.print(operationObj.oldValue, operationObj.value);
     }
     console.log("-----------");
     console.log(`Total: ${this._currentValue}`);
@@ -66,11 +65,11 @@ class Calculator {
 const calculator = new Calculator(0);
 
 calculator
-  .execute("add", 10)
-  .execute("add", 20)
-  .execute("subtract", 15)
-  .execute("multiply", 3)
-  .execute("divide", 2)
+  .execute(new Add(), 10)
+  .execute(new Add(), 20)
+  .execute(new Subtract(), 15)
+  .execute(new Multiply(), 3)
+  .execute(new Divide(), 2)
   .printOperations();
 
 export {};
