@@ -16,7 +16,15 @@ class Tank {
   }
 }
 
-class Vehicle {
+interface Movable {
+  move(distance: number): void;
+}
+
+interface HasTank {
+  fillTank(amount: number): void;
+}
+
+class Car implements Movable, HasTank {
   private _tank: Tank;
   private _kmsPerLiter: number;
 
@@ -32,21 +40,38 @@ class Vehicle {
   move(kilometers: number) {
     const consumedFuel = kilometers / this._kmsPerLiter;
     this._tank.consume(consumedFuel);
+    console.log(`Car travelled ${kilometers}km`);
   }
 }
 
-class Car extends Vehicle {
-  constructor(tankCapacity: number, kmsPerLiter: number) {
-    super(new Tank(tankCapacity), kmsPerLiter);
+class Truck implements Movable, HasTank {
+  private _tank: Tank;
+  private _kmsPerLiter: number;
+
+  constructor(tank: Tank, kmsPerLiter?: number) {
+    this._tank = tank;
+    this._kmsPerLiter = kmsPerLiter || 10;
+  }
+
+  fillTank(liters: number) {
+    this._tank.fill(liters);
+  }
+
+  move(kilometers: number) {
+    const consumedFuel = kilometers / this._kmsPerLiter;
+    this._tank.consume(consumedFuel);
+    console.log(`Truck travelled ${kilometers}km`);
+  } 
+}
+
+class Bicycle implements Movable {
+  move(kilometers: number) {
+    console.log(`Bike travelled ${kilometers}km`);
   }
 }
 
-class Truck extends Vehicle {
-  constructor(tankCapacity: number, kmsPerLiter: number) {
-    super(new Tank(tankCapacity), kmsPerLiter);
-  }
-}
-
-// What happens when we want to create a Bicycle?
+const bike = new Bicycle();
+const car = new Car(new Tank(100), 30);
+const truck = new Truck(new Tank(300), 20);
 
 export {};
