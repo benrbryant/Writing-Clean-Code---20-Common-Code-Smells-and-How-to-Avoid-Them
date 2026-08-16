@@ -2,59 +2,49 @@ import fs from "fs";
 import path from "path";
 import readline from "readline";
 
-export const readCustomersFromCsv = async (): Promise<string[]> => {
+type Customer = {
+  name?: string;
+  phone?: string;
+  email?: string;
+}
+
+const _readCustomersFromCsv = async (): Promise<{ headers: string[], data: string[]}> => {
   const fileReader = fs.createReadStream(path.resolve(__dirname + "/customerData.csv"));
   const lineReader = readline.createInterface({
     input: fileReader,
     crlfDelay: Infinity,
   });
-  let lineCounter = 0;
-  const customerLines: string[] = [];
+  let lineCount = 0;
+  let headers: string[] = [];
+  const data: string[] = [];
 
-  for await (const l of lineReader) {
-    if (lineCounter > 0) {
-      customerLines.push(l);
+  for await (const line of lineReader) {
+    if (lineCount === 0) {
+      headers = line.split(',');
+    } else {
+      data.push(line);
     }
-
-    lineCounter++;
+    lineCount++;
   }
 
-  return customerLines;
+  return { headers, data };
 };
 
-export const readCustomerProperties = async (): Promise<string[]> => {
-  const fileReader = fs.createReadStream(path.resolve(__dirname + "/customerData.csv"));
-  const lineReader = readline.createInterface({
-    input: fileReader,
-    crlfDelay: Infinity,
-  });
-  let lineCounter = 0;
-  const customerProperties: string[] = [];
+export const getCustomers = async (): Promise<Customer[]> => {
+  const { headers, data } = await _readCustomersFromCsv();
 
-  for await (const l of lineReader) {
-    if (lineCounter === 0) {
-      customerProperties.push(...l.split(","));
-    }
-
-    lineCounter++;
-  }
-
-  return customerProperties;
-};
-
-export const parseCustomerData = (customerLines: string[], customerProperties: string[]) => {
   const customers = [];
 
-  for (const line of customerLines) {
-    const customer: { [index: string]: string | undefined } = {};
+  for (const line of data) {
+    const customerRaw: { [index: string]: string | undefined } = {};
     const customerData = line.split(",");
 
-    for (let i = 0; i < customerProperties.length; i++) {
-      customer[customerProperties[i]] = Boolean(customerData[i]) ? customerData[i] : undefined;
+    for (let i = 0; i < headers.length; i++) {
+      customerRaw[headers[i]] = Boolean(customerData[i]) ? customerData[i] : undefined;
     }
 
-    customers.push(customer);
+    customers.push(customerRaw);
   }
 
-  return customers;
+  return customers.map(({ name, phone, email}) => ({ name, phone, email }));
 };

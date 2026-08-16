@@ -1,9 +1,7 @@
-import { parseCustomerData, readCustomerProperties, readCustomersFromCsv } from "./utils";
+import { getCustomers } from "./utils";
 
 const sendEmails = async () => {
-  const customerLines = await readCustomersFromCsv();
-  const customerProperties = await readCustomerProperties();
-  const customers = parseCustomerData(customerLines, customerProperties);
+  const customers = await getCustomers();
 
   for (const customer of customers) {
     if (Boolean(customer.email)) {
@@ -16,9 +14,7 @@ const sendEmails = async () => {
 };
 
 const displayCustomers = async () => {
-  const customerLines = await readCustomersFromCsv();
-  const customerProperties = await readCustomerProperties();
-  const customers = parseCustomerData(customerLines, customerProperties);
+  const customers = await getCustomers();
 
   for (const customer of customers) {
     console.log("---\n");

@@ -1,4 +1,8 @@
-class Customer {
+interface Loggable {
+  toString(): string
+}
+
+class Customer implements Loggable {
   private _firstName: string;
   private _lastName: string;
 
@@ -10,9 +14,13 @@ class Customer {
   getFullName() {
     return `${this._firstName} ${this._lastName}`;
   }
+
+  toString() {
+    return this.getFullName();
+  }
 }
 
-class Product {
+class Product implements Loggable {
   private _title: string;
   private _price: number;
 
@@ -24,14 +32,17 @@ class Product {
   getTitle() {
     return this._title;
   }
+
+  toString() {
+    return this.getTitle();
+  }
 }
 
-const logCustomer = (cust: Customer) => {
-  console.log(`[logObject] : ${cust.getFullName()}`);
+const log = (obj: Loggable) => {
+  console.log(`[logObject] : ${obj.toString()}`);
 };
 
-const logProduct = (prod: Product) => {
-  console.log(`[logObject] : ${prod.getTitle()}`);
-};
+log(new Customer('Ben', 'Bryant'));
+log(new Product('Beef Jerky', 5.99))
 
 export {};
