@@ -23,10 +23,15 @@ const loadCustomers = (): Customer[] => {
   ];
 };
 
+const sanitizeCustomer = (customer: Customer): Customer => {
+  return {
+    name: customer.name,
+    email: customer.email ?? 'None'
+  }
+}
+
 const sanitizeCustomers = (customers: Customer[]) => {
-  customers
-    .filter((customer) => !Boolean(customer.email))
-    .forEach((customer) => (customer.email = "None"));
+  return customers.map(sanitizeCustomer)
 };
 
 const sendEmails = (customers: Customer[]) => {
@@ -35,10 +40,7 @@ const sendEmails = (customers: Customer[]) => {
     .forEach((customer) => console.log(`E-mail sent to ${customer.name} : ${customer.email}`));
 };
 
-const customers = loadCustomers();
-
-// What happens when we uncomment the following line?
-// sanitizeCustomers(customers);
+const customers = sanitizeCustomers(loadCustomers());
 
 sendEmails(customers);
 
